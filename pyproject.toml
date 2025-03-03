@@ -1,6 +1,6 @@
 [project]
 name = "oai"
-version = "0.1.0"
+version = "1.0.0"
 description = "Chat with OpenAI LLMs in the terminal"
 readme = "README.md"
 requires-python = ">=3.13.2"
