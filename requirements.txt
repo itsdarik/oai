@@ -28,7 +28,7 @@ markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-openai==1.65.2
+openai==1.65.4
     # via oai (pyproject.toml)
 pydantic==2.10.6
     # via openai
