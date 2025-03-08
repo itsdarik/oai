@@ -45,10 +45,12 @@ Chat with OpenAI LLMs in the terminal.
 
 ## Pricing
 
-| Model       | Input | Cached Input | Output | Cost vs GPT-4o mini |
-|-------------|-------|--------------|--------|---------------------|
-| GPT-4o      | $2.50 | $1.25        | $10.00 | 16.67x              |
-| GPT-4o mini | $0.15 | $0.075       | $0.60  | 1x                  |
-| o1-mini     | $1.10 | $0.55        | $4.40  | 7.33x               |
+| Model           | Input  | Cached Input | Output  | Cost vs gpt-4o mini |
+|-----------------|--------|--------------|---------|---------------------|
+| gpt-4.5-preview | $75.00 | $37.50       | $150.00 | 500x                |
+| gpt-4o          | $2.50  | $1.25        | $10.00  | 16.67x              |
+| gpt-4o mini     | $0.15  | $0.075       | $0.60   | 1x                  |
+| o1              | $15.00 | $7.50        | $60.00  | 100x                |
+| o3-mini         | $1.10  | $0.55        | $4.40   | 7.33x               |
 
-Per 1M tokens. As of March 2, 2025.
+Per 1M tokens. As of March 7, 2025.
