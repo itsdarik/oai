@@ -1,7 +1,12 @@
 [project]
-name = "oai"
-version = "1.1.0"
-description = "Chat with OpenAI LLMs in the terminal"
+name = "chai"
+version = "0.1.0"
+description = "Chat with AI in the terminal"
 readme = "README.md"
 requires-python = ">=3.13.2"
-dependencies = ["openai", "rich"]
+dependencies = [
+    "anthropic",
+    "google-genai",
+    "openai",
+    "rich",
+]
