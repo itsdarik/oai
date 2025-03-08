@@ -33,7 +33,7 @@ MODELS = (
     "o3-mini",
 )
 
-SAVE_DIR = Path.home() / ".oai"
+SAVE_DIR = Path.home() / ".chai"
 
 CLI_PROMPT = ">>> "
 MULTI_LINE_INPUT = '"""'

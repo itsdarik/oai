@@ -1,4 +1,4 @@
-# oai
+# chai
 
 Chat with OpenAI LLMs in the terminal.
 
@@ -33,15 +33,15 @@ Chat with OpenAI LLMs in the terminal.
 
    * Set `OPENAI_API_KEY` to your OpenAI API key.
 
-   * Add the directory containing `oai` to your `PATH`.
+   * Add the directory containing `chai` to your `PATH`.
 
-6. Run `oai`.
+6. Run `chai`.
 
 ### Subsequent Usage
 
 1. Activate the virtual environment.
 
-2. Run `oai`.
+2. Run `chai`.
 
 ## Pricing
 
