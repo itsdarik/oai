@@ -70,4 +70,4 @@ class OpenAIProvider(Provider):
             raise ValueError(f"Invalid model: {model}")
         if self.api_key is None:
             raise RuntimeError(f"{self.api_key_name} environment variable not set")
-        return OpenAIChat(self._client, self.api_key, model)
+        return OpenAIChat(self.api_key, model)

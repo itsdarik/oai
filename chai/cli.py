@@ -14,6 +14,7 @@
 
 from .providers.chat import Chat
 from .providers.factory import get_providers
+from .providers.provider import Provider
 
 import argparse
 import json
@@ -189,6 +190,7 @@ def handle_command(user_input: str, chat: Chat, args: ChatArgs) -> None:
 
 
 def input_loop(chat: Chat, args: ChatArgs) -> None:
+    # Enable better line editing.
     readline.parse_and_bind("set editing-mode emacs")
 
     while True:
@@ -212,11 +214,21 @@ def input_loop(chat: Chat, args: ChatArgs) -> None:
         print()
 
 
+def get_provider(model: str) -> Provider:
+    providers = get_providers()
+    if not providers:
+        raise RuntimeError("No providers available")
+
+    for provider in providers:
+        if model in provider.models:
+            return provider
+
+    raise ValueError(f"Invalid model: {model}")
+
+
 # chat command
 def chat(args: ChatArgs) -> None:
-    providers = get_providers()
-    chat = providers[0].create_chat(args.model)
-    input_loop(chat, args)
+    input_loop(get_provider(args.model).create_chat(args.model), args)
 
 
 def print_markdown(markdown: str, args: Args) -> None:
