@@ -31,24 +31,30 @@ MULTI_LINE_INPUT = '"""'
 
 
 @dataclass(frozen=True)
-class Settings:
-    pretty: bool
+class Args:
+    command: str
 
 
-def send(chat: Chat, user_input: str, settings: Settings) -> str:
+@dataclass(frozen=True)
+class ChatArgs(Args):
+    model: str
+    plain: bool
+
+
+def send(chat: Chat, user_input: str, args: ChatArgs) -> None:
     response = chat.send(user_input)
-    if settings.pretty:
+    if args.plain:
+        for chunk in response:
+            if chunk:
+                print(chunk, end="", flush=True)
+        print()
+    else:
         full_response = ""
         with Live(console=Console()) as live:
             for chunk in response:
                 if chunk:
                     full_response += chunk
                     live.update(Markdown(full_response))
-    else:
-        for chunk in response:
-            if chunk:
-                print(chunk, end="", flush=True)
-        print()
 
 
 def get_user_input() -> str:
@@ -113,7 +119,7 @@ def save_conversation(user_input: str, chat: Chat) -> None:
     print(f"\nSaved conversation to '{path}'.")
 
 
-def load_conversation(user_input: str, chat: Chat, settings: Settings) -> None:
+def load_conversation(user_input: str, chat: Chat, args: ChatArgs) -> None:
     parts = user_input.split()
     if len(parts) != 2:
         print("Usage:\n  /load <file>")
@@ -140,11 +146,14 @@ def load_conversation(user_input: str, chat: Chat, settings: Settings) -> None:
     chat.clear()
     # TODO: abstract this.
     from .providers.chat import Message
-    chat.history.extend([Message(message["role"], message["content"]) for message in saved_conversation])
-    print_conversation(chat, settings)
+
+    chat.history.extend(
+        [Message(message["role"], message["content"]) for message in saved_conversation]
+    )
+    print_conversation(chat, args)
 
 
-def print_conversation(chat: Chat, settings: Settings) -> None:
+def print_conversation(chat: Chat, args: ChatArgs) -> None:
     if not chat.history:
         return
 
@@ -153,13 +162,13 @@ def print_conversation(chat: Chat, settings: Settings) -> None:
         if message.role == "user":
             print(f"\n{CLI_PROMPT}{message.content}")
         else:
-            if settings.pretty:
-                Console().print(Markdown(message.content))
-            else:
+            if args.plain:
                 print(message.content)
+            else:
+                Console().print(Markdown(message.content))
 
 
-def handle_command(user_input: str, chat: Chat, settings: Settings) -> None:
+def handle_command(user_input: str, chat: Chat, args: ChatArgs) -> None:
     command = user_input.split()[0]
 
     if command == "/bye":
@@ -168,7 +177,7 @@ def handle_command(user_input: str, chat: Chat, settings: Settings) -> None:
         chat.clear()
         print("Cleared conversation.")
     elif command == "/load":
-        load_conversation(user_input, chat, settings)
+        load_conversation(user_input, chat, args)
     elif command == "/save":
         save_conversation(user_input, chat)
     elif command == "/?" or command == "/help":
@@ -179,7 +188,7 @@ def handle_command(user_input: str, chat: Chat, settings: Settings) -> None:
     print()
 
 
-def input_loop(chat: Chat, settings: Settings) -> None:
+def input_loop(chat: Chat, args: ChatArgs) -> None:
     readline.parse_and_bind("set editing-mode emacs")
 
     while True:
@@ -189,50 +198,64 @@ def input_loop(chat: Chat, settings: Settings) -> None:
                 continue
 
             if user_input.startswith("/"):
-                handle_command(user_input, chat, settings)
+                handle_command(user_input, chat, args)
                 continue
 
         except EOFError:
             break
 
         try:
-            send(chat, user_input, settings)
+            send(chat, user_input, args)
         except Exception as e:
             print(f"Error: {e}")
 
         print()
 
 
+def chat(args: ChatArgs) -> None:
+    providers = get_providers()
+    chat = providers[0].create_chat(args.model)
+    input_loop(chat, args)
+
+
+def list_models() -> None:
+    pass
+
+
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Chat with OpenAI LLMs in the terminal",
+        description="Chat with AI in the terminal",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument(
-        "--model", default="gpt-4o-mini", help="the OpenAI model to use"
-    )
-    parser.add_argument("--pretty", action="store_true", help="pretty print responses")
+
+    subparsers = parser.add_subparsers(dest="command", help="commands")
+
+    chat_parser = subparsers.add_parser("chat", help="chat with a model")
+    chat_parser.add_argument("model", help="the model to use")
+    chat_parser.add_argument("--plain", action="store_true", help="plain text output")
+
+    subparsers.add_parser("list", help="list available models")
+
     return parser.parse_args()
 
 
-@dataclass(frozen=True)
-class Args:
-    model: str
-    pretty: bool
-
-
-def get_args() -> Args:
+def get_args() -> ChatArgs | Args:
     args = parse_arguments()
-    return Args(model=args.model, pretty=args.pretty)
+    if args.command == "chat":
+        return ChatArgs(args.command, args.model, args.plain)
+    if args.command == "list":
+        return Args(args.command)
+    raise ValueError(f"Unknown command: {args.command}")
 
 
 def main() -> None:
     args = get_args()
-    # TODO: fix this logic.
-    providers = get_providers()
-    chat = providers[0].create_chat(args.model)
-    settings = Settings(pretty=args.pretty)
-    input_loop(chat, settings)
+    if isinstance(args, ChatArgs):
+        chat(args)
+    elif args.command == "list":
+        list_models()
+    else:
+        print("Unknown command")
 
 
 if __name__ == "__main__":
