@@ -33,7 +33,7 @@ class Message(ABC):
 
 
 class Chat(ABC):
-    """Abstract base class for LLM chat sessions."""
+    """Abstract base class for chat sessions."""
 
     @property
     @abstractmethod
