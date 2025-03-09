@@ -33,12 +33,12 @@ MULTI_LINE_INPUT = '"""'
 @dataclass(frozen=True)
 class Args:
     command: str
+    plain: bool
 
 
 @dataclass(frozen=True)
 class ChatArgs(Args):
     model: str
-    plain: bool
 
 
 def send(chat: Chat, user_input: str, args: ChatArgs) -> None:
@@ -218,7 +218,7 @@ def chat(args: ChatArgs) -> None:
     input_loop(chat, args)
 
 
-def list_models() -> None:
+def list_models(args: Args) -> None:
     pass
 
 
@@ -227,12 +227,12 @@ def parse_arguments() -> argparse.Namespace:
         description="Chat with AI in the terminal",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+    parser.add_argument("--plain", action="store_true", help="plain text output")
 
     subparsers = parser.add_subparsers(dest="command", help="commands")
 
     chat_parser = subparsers.add_parser("chat", help="chat with a model")
     chat_parser.add_argument("model", help="the model to use")
-    chat_parser.add_argument("--plain", action="store_true", help="plain text output")
 
     subparsers.add_parser("list", help="list available models")
 
@@ -242,9 +242,9 @@ def parse_arguments() -> argparse.Namespace:
 def get_args() -> ChatArgs | Args:
     args = parse_arguments()
     if args.command == "chat":
-        return ChatArgs(args.command, args.model, args.plain)
+        return ChatArgs(args.command, args.plain, args.model)
     if args.command == "list":
-        return Args(args.command)
+        return Args(args.command, args.plain)
     raise ValueError(f"Unknown command: {args.command}")
 
 
@@ -253,7 +253,7 @@ def main() -> None:
     if isinstance(args, ChatArgs):
         chat(args)
     elif args.command == "list":
-        list_models()
+        list_models(args)
     else:
         raise ValueError(f"Unknown command: {args.command}")
 
