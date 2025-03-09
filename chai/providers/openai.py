@@ -69,5 +69,5 @@ class OpenAIProvider(Provider):
     def _get_api_key() -> str:
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key is None:
-            raise RuntimeError("OPENAI_API_KEY environment variable is not set")
+            raise RuntimeError("OPENAI_API_KEY environment variable not set")
         return api_key
