@@ -10,11 +10,12 @@
 # ANY KIND, either express or implied.  See the License for the specific language
 # governing permissions and limitations under the License.
 
-from .chat import Chat, Message
-from .provider import Provider
+from typing import Generator
 
 from openai import OpenAI
-from typing import Generator
+
+from .chat import Chat, Message
+from .provider import Provider
 
 
 class OpenAIMessage(Message):

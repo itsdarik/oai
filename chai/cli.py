@@ -10,18 +10,17 @@
 # ANY KIND, either express or implied.  See the License for the specific language
 # governing permissions and limitations under the License.
 
-from .providers.chat import Chat
-from .providers.factory import get_providers
-from .providers.provider import Provider
+import argparse
+import readline
+from dataclasses import dataclass
 
 from rich.console import Console
 from rich.live import Live
 from rich.markdown import Markdown
 
-from dataclasses import dataclass
-
-import argparse
-import readline
+from .providers.chat import Chat
+from .providers.factory import get_providers
+from .providers.provider import Provider
 
 CLI_PROMPT = ">>> "
 MULTI_LINE_INPUT = '"""'

@@ -10,11 +10,10 @@
 # ANY KIND, either express or implied.  See the License for the specific language
 # governing permissions and limitations under the License.
 
-from .chat import Chat
-
+import os
 from abc import ABC, abstractmethod
 
-import os
+from .chat import Chat
 
 
 class Provider(ABC):
