@@ -56,36 +56,6 @@ def send(chat: Chat, user_input: str, args: ChatArgs) -> None:
                     live.update(Markdown(full_response))
 
 
-def get_user_input() -> str:
-    user_input = input(CLI_PROMPT).strip()
-
-    # Handle multi-line input.
-    if user_input.startswith(MULTI_LINE_INPUT):
-        lines = [user_input[len(MULTI_LINE_INPUT) :]]
-        while True:
-            line = input().rstrip()
-            if line.endswith(MULTI_LINE_INPUT):
-                lines.append(line[: -len(MULTI_LINE_INPUT)])
-                break
-            lines.append(line)
-        user_input = "\n".join(lines).strip()
-
-    return user_input.strip()
-
-
-def print_help() -> None:
-    print(
-        "Available Commands:\n"
-        "  /clear            Clear session context\n"
-        "  /save <file>      Save chat to a file\n"
-        "  /load <file>      Load chat from a file\n"
-        "  /bye              Exit\n"
-        "  /?, /help         Print available commands\n"
-        "\n"
-        f"Use {MULTI_LINE_INPUT} to begin a multi-line message."
-    )
-
-
 def save_chat(user_input: str, chat: Chat) -> None:
     from .persistence import get_save_file_path, save_chat, save_file_exists
 
@@ -155,6 +125,19 @@ def print_conversation(chat: Chat, args: ChatArgs) -> None:
                 Console().print(Markdown(message.content))
 
 
+def print_help() -> None:
+    print(
+        "Available Commands:\n"
+        "  /clear            Clear chat history\n"
+        "  /save <file>      Save chat to a file\n"
+        "  /load <file>      Load chat from a file\n"
+        "  /bye              Exit\n"
+        "  /?, /help         Print available commands\n"
+        "\n"
+        f"Use {MULTI_LINE_INPUT} to begin a multi-line message."
+    )
+
+
 def handle_command(user_input: str, chat: Chat, args: ChatArgs) -> None:
     command = user_input.split()[0]
 
@@ -173,6 +156,23 @@ def handle_command(user_input: str, chat: Chat, args: ChatArgs) -> None:
         print(f"Unknown command: '{command}'. Type /? for help.")
 
     print()
+
+
+def get_user_input() -> str:
+    user_input = input(CLI_PROMPT).strip()
+
+    # Handle multi-line input.
+    if user_input.startswith(MULTI_LINE_INPUT):
+        lines = [user_input[len(MULTI_LINE_INPUT) :]]
+        while True:
+            line = input().rstrip()
+            if line.endswith(MULTI_LINE_INPUT):
+                lines.append(line[: -len(MULTI_LINE_INPUT)])
+                break
+            lines.append(line)
+        user_input = "\n".join(lines).strip()
+
+    return user_input.strip()
 
 
 def input_loop(chat: Chat, args: ChatArgs) -> None:
