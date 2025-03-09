@@ -1,15 +1,23 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from typing import Generator
 
 
-@dataclass(frozen=True)
-class Message:
-    role: str
-    content: str
+class Message(ABC):
+    """Abstract base class for chat messages."""
 
+    def __init__(self, role: str, content: str):
+        self.role: str = role
+        self.content: str = content
+
+    @abstractmethod
     def dict(self) -> dict[str, str]:
-        return {"role": self.role, "content": self.content}
+        """Return the message as a dictionary."""
+        pass
+
+    @abstractmethod
+    def from_user(self) -> bool:
+        """Return True if the message is from the user, False otherwise."""
+        pass
 
 
 class Chat(ABC):
@@ -32,7 +40,6 @@ class Chat(ABC):
         """Send a message to the model and stream the response."""
         pass
 
-    @abstractmethod
     def clear(self) -> None:
         """Clear the chat history."""
-        pass
+        self.history.clear()

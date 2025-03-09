@@ -17,7 +17,6 @@ from .providers.factory import get_providers
 from .providers.provider import Provider
 
 import argparse
-import json
 import readline
 from dataclasses import dataclass
 from pathlib import Path
@@ -89,69 +88,13 @@ def print_help() -> None:
 
 
 def save_conversation(user_input: str, chat: Chat) -> None:
-    parts = user_input.split()
-    if len(parts) != 2:
-        print("Usage:\n  /save <file>")
-        return
-
-    if not chat.history:
-        print("No conversation to save.")
-        return
-
-    filename = parts[1]
-    if "/" in filename or "\\" in filename:
-        print("Invalid filename.")
-        return
-    if not filename.endswith(".json"):
-        filename += ".json"
-
-    path = SAVE_DIR / filename
-    if (
-        path.exists()
-        and input(f"File '{path}' already exists. Overwrite? (y/n) ").strip().lower()
-        != "y"
-    ):
-        return
-
-    SAVE_DIR.mkdir(parents=True, exist_ok=True)
-    with open(path, "w") as save_file:
-        conversation = [message.dict() for message in chat.history]
-        json.dump(conversation, save_file, indent=4)
-    print(f"\nSaved conversation to '{path}'.")
+    # TODO: implement.
+    pass
 
 
 def load_conversation(user_input: str, chat: Chat, args: ChatArgs) -> None:
-    parts = user_input.split()
-    if len(parts) != 2:
-        print("Usage:\n  /load <file>")
-        return
-
-    filename = parts[1]
-    if not filename.endswith(".json"):
-        filename += ".json"
-
-    path = SAVE_DIR / filename
-    if not path.exists():
-        print(f"File '{path}' does not exist.")
-        return
-
-    if (
-        chat.history
-        and input("Overwrite current conversation? (y/n) ").strip().lower() != "y"
-    ):
-        return
-
-    with open(path) as save_file:
-        saved_conversation = json.load(save_file)
-
-    chat.clear()
-    # TODO: abstract this.
-    from .providers.chat import Message
-
-    chat.history.extend(
-        [Message(message["role"], message["content"]) for message in saved_conversation]
-    )
-    print_conversation(chat, args)
+    # TODO: implement.
+    pass
 
 
 def print_conversation(chat: Chat, args: ChatArgs) -> None:
@@ -159,8 +102,7 @@ def print_conversation(chat: Chat, args: ChatArgs) -> None:
         return
 
     for message in chat.history:
-        # TODO: abstract "user" in each specific chat class.
-        if message.role == "user":
+        if message.from_user():
             print(f"\n{CLI_PROMPT}{message.content}")
         else:
             if args.plain:

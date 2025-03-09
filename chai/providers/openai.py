@@ -5,13 +5,23 @@ from openai import OpenAI
 from typing import Generator
 
 
+class OpenAIMessage(Message):
+    """OpenAI chat message."""
+
+    def dict(self) -> dict[str, str]:
+        return {"role": self.role, "content": self.content}
+
+    def from_user(self) -> bool:
+        return self.role == "user"
+
+
 class OpenAIChat(Chat):
     """OpenAI chat session."""
 
     def __init__(self, api_key: str, model: str) -> None:
         self._client: OpenAI = OpenAI(api_key=api_key)
         self._model: str = model
-        self._history: list[Message] = []
+        self._history: list[OpenAIMessage] = []
 
     @property
     def model(self) -> str:
@@ -22,7 +32,7 @@ class OpenAIChat(Chat):
         return self._history
 
     def send(self, message: str) -> Generator[str, None, None]:
-        self._history.append(Message(role="user", content=message))
+        self._history.append(OpenAIMessage(role="user", content=message))
 
         response = self._client.chat.completions.create(
             messages=[message.dict() for message in self._history],
@@ -38,10 +48,7 @@ class OpenAIChat(Chat):
                 full_content += chunk_content
                 yield chunk_content
 
-        self._history.append(Message(role="assistant", content=full_content))
-
-    def clear(self) -> None:
-        self._history.clear()
+        self._history.append(OpenAIMessage(role="assistant", content=full_content))
 
 
 class OpenAIProvider(Provider):
