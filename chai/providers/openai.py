@@ -50,6 +50,9 @@ class OpenAIChat(Chat):
 
         self._history.append(OpenAIMessage(role="assistant", content=full_content))
 
+    def create_message(self, message_data: dict[str, str]) -> OpenAIMessage:
+        return OpenAIMessage(role=message_data["role"], content=message_data["content"])
+
 
 class OpenAIProvider(Provider):
     """OpenAI provider."""

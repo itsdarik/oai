@@ -16,15 +16,14 @@ from .providers.chat import Chat
 from .providers.factory import get_providers
 from .providers.provider import Provider
 
-import argparse
-import readline
-from dataclasses import dataclass
-from pathlib import Path
 from rich.console import Console
 from rich.live import Live
 from rich.markdown import Markdown
 
-SAVE_DIR = Path.home() / ".chai"
+from dataclasses import dataclass
+
+import argparse
+import readline
 
 CLI_PROMPT = ">>> "
 MULTI_LINE_INPUT = '"""'
@@ -78,8 +77,8 @@ def print_help() -> None:
     print(
         "Available Commands:\n"
         "  /clear            Clear session context\n"
-        "  /save <file>      Save conversation to a file\n"
-        "  /load <file>      Load conversation from a file\n"
+        "  /save <file>      Save chat to a file\n"
+        "  /load <file>      Load chat from a file\n"
         "  /bye              Exit\n"
         "  /?, /help         Print available commands\n"
         "\n"
@@ -87,14 +86,59 @@ def print_help() -> None:
     )
 
 
-def save_conversation(user_input: str, chat: Chat) -> None:
-    # TODO: implement.
-    pass
+def save_chat(user_input: str, chat: Chat) -> None:
+    from .persistence import get_save_file_path, save_chat, save_file_exists
+
+    parts = user_input.split()
+    if len(parts) != 2:
+        print("Usage:\n  /save <file>")
+        return
+
+    if not chat.history:
+        print("No chat history to save.")
+        return
+
+    filename = parts[1]
+    if "/" in filename or "\\" in filename:
+        print("Invalid filename.")
+        return
+
+    path = get_save_file_path()
+    if (
+        save_file_exists(filename)
+        and input(f"File '{path}' already exists. Overwrite? (y/n) ").strip().lower()
+        != "y"
+    ):
+        return
+
+    try:
+        path = save_chat(chat, filename)
+        print(f"\nSaved chat to '{path}'.")
+    except Exception as e:
+        print(f"Error saving chat: {e}")
 
 
-def load_conversation(user_input: str, chat: Chat, args: ChatArgs) -> None:
-    # TODO: implement.
-    pass
+def load_chat(user_input: str, chat: Chat, args: ChatArgs) -> None:
+    from .persistence import load_chat
+
+    parts = user_input.split()
+    if len(parts) != 2:
+        print("Usage:\n  /load <file>")
+        return
+
+    filename = parts[1]
+
+    if (
+        chat.history
+        and input("Overwrite current conversation? (y/n) ").strip().lower() != "y"
+    ):
+        return
+
+    try:
+        load_chat(filename, chat)
+        print_conversation(chat, args)
+    except Exception as e:
+        print(f"Error loading chat: {e}")
 
 
 def print_conversation(chat: Chat, args: ChatArgs) -> None:
@@ -118,11 +162,11 @@ def handle_command(user_input: str, chat: Chat, args: ChatArgs) -> None:
         raise EOFError
     elif command == "/clear":
         chat.clear()
-        print("Cleared conversation.")
+        print("Cleared chat history.")
     elif command == "/load":
-        load_conversation(user_input, chat, args)
+        load_chat(user_input, chat, args)
     elif command == "/save":
-        save_conversation(user_input, chat)
+        save_chat(user_input, chat)
     elif command == "/?" or command == "/help":
         print_help()
     else:

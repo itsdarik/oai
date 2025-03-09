@@ -43,3 +43,8 @@ class Chat(ABC):
     def clear(self) -> None:
         """Clear the chat history."""
         self.history.clear()
+
+    @abstractmethod
+    def create_message(self, message_data: dict[str, str]) -> Message:
+        """Create a message from a dictionary."""
+        pass
