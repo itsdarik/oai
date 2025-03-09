@@ -73,7 +73,7 @@ def save_chat(user_input: str, chat: Chat) -> None:
         print("Invalid filename.")
         return
 
-    path = get_save_file_path()
+    path = get_save_file_path(filename)
     if (
         save_file_exists(filename)
         and input(f"File '{path}' already exists. Overwrite? (y/n) ").strip().lower()
