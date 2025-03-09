@@ -1,5 +1,8 @@
-from abc import ABC, abstractmethod
 from .chat import Chat
+
+from .openai import OpenAIProvider, API_KEY as OPENAI_API_KEY
+
+from abc import ABC, abstractmethod
 
 import os
 
@@ -31,3 +34,11 @@ def get_api_key(key: str) -> str:
     if api_key is None:
         raise RuntimeError(f"{key} environment variable not set")
     return api_key
+
+
+def get_providers() -> list[Provider]:
+    """Return a list of available providers."""
+    providers = []
+    if os.getenv(OPENAI_API_KEY):
+        providers.append(OpenAIProvider())
+    return providers

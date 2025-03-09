@@ -4,6 +4,8 @@ from .provider import Provider, get_api_key
 from openai import OpenAI
 from typing import Generator
 
+API_KEY = "OPENAI_API_KEY"
+
 
 class OpenAIChat(Chat):
     """OpenAI chat session."""
@@ -49,7 +51,7 @@ class OpenAIProvider(Provider):
 
     def __init__(self) -> None:
         self._name: str = "OpenAI"
-        self._client: OpenAI = OpenAI(api_key=get_api_key("OPENAI_API_KEY"))
+        self._client: OpenAI = OpenAI(api_key=get_api_key(API_KEY))
 
     @property
     def name(self) -> str:
