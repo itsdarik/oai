@@ -13,7 +13,7 @@
 # governing permissions and limitations under the License.
 
 from .providers.chat import Chat
-from .providers.provider import get_providers
+from .providers.factory import get_providers
 
 import argparse
 import json
@@ -39,7 +39,7 @@ def send(chat: Chat, user_input: str, settings: Settings) -> str:
     response = chat.send(user_input)
     if settings.pretty:
         full_response = ""
-        with Live(console=Console(), refresh_per_second=8) as live:
+        with Live(console=Console()) as live:
             for chunk in response:
                 if chunk:
                     full_response += chunk
@@ -47,7 +47,7 @@ def send(chat: Chat, user_input: str, settings: Settings) -> str:
     else:
         for chunk in response:
             if chunk:
-                print(chunk)
+                print(chunk, end="", flush=True)
         print()
 
 
@@ -138,7 +138,9 @@ def load_conversation(user_input: str, chat: Chat, settings: Settings) -> None:
         saved_conversation = json.load(save_file)
 
     chat.clear()
-    chat.history.extend(saved_conversation)
+    # TODO: abstract this.
+    from .providers.chat import Message
+    chat.history.extend([Message(message["role"], message["content"]) for message in saved_conversation])
     print_conversation(chat, settings)
 
 
