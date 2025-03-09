@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from .chat import Chat
 
+import os
+
 
 class Provider(ABC):
     """Abstract base class for LLM providers."""
@@ -21,3 +23,11 @@ class Provider(ABC):
     def create_chat(self, model: str) -> Chat:
         """Create a new chat session."""
         pass
+
+
+def get_api_key(key: str) -> str:
+    """Get an API key from an environment variable."""
+    api_key = os.getenv(key)
+    if api_key is None:
+        raise RuntimeError(f"{key} environment variable not set")
+    return api_key

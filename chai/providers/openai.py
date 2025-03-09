@@ -1,10 +1,8 @@
 from .chat import Chat, Message
-from .provider import Provider
+from .provider import Provider, get_api_key
 
 from openai import OpenAI
 from typing import Generator
-
-import os
 
 
 class OpenAIChat(Chat):
@@ -51,7 +49,7 @@ class OpenAIProvider(Provider):
 
     def __init__(self) -> None:
         self._name: str = "OpenAI"
-        self._client: OpenAI = OpenAI(api_key=self._get_api_key())
+        self._client: OpenAI = OpenAI(api_key=get_api_key("OPENAI_API_KEY"))
 
     @property
     def name(self) -> str:
@@ -65,9 +63,3 @@ class OpenAIProvider(Provider):
         if model not in self.models:
             raise ValueError(f"Invalid model: {model}")
         return OpenAIChat(self._client, model)
-
-    def _get_api_key() -> str:
-        api_key = os.getenv("OPENAI_API_KEY")
-        if api_key is None:
-            raise RuntimeError("OPENAI_API_KEY environment variable not set")
-        return api_key
