@@ -255,7 +255,7 @@ def main() -> None:
     elif args.command == "list":
         list_models()
     else:
-        print("Unknown command")
+        raise ValueError(f"Unknown command: {args.command}")
 
 
 if __name__ == "__main__":
