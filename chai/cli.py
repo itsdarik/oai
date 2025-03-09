@@ -212,14 +212,49 @@ def input_loop(chat: Chat, args: ChatArgs) -> None:
         print()
 
 
+# chat command
 def chat(args: ChatArgs) -> None:
     providers = get_providers()
     chat = providers[0].create_chat(args.model)
     input_loop(chat, args)
 
 
+def print_markdown(markdown: str, args: Args) -> None:
+    if args.plain:
+        print(markdown)
+    else:
+        Console().print(Markdown(markdown))
+
+
+def get_providers_models_list() -> str:
+    providers = get_providers()
+    if not providers:
+        raise RuntimeError("No providers available")
+
+    markdown = "# Available Models"
+
+    for provider in sorted(providers, key=lambda p: p.name):
+        markdown += f"\n\n## {provider.name}"
+
+        if provider.api_key is None:
+            markdown += (
+                f"\n\nAPI key environment variable ({provider.api_key_name}) not set."
+            )
+            continue
+
+        models = provider.models
+        if not models:
+            markdown += "\n\nNo models available."
+            continue
+        for model in sorted(models):
+            markdown += f"\n* {model}"
+
+    return markdown
+
+
+# list command
 def list_models(args: Args) -> None:
-    pass
+    print_markdown(get_providers_models_list(), args)
 
 
 def parse_arguments() -> argparse.Namespace:

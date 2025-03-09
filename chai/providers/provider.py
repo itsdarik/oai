@@ -16,6 +16,17 @@ class Provider(ABC):
 
     @property
     @abstractmethod
+    def api_key_name(self) -> str:
+        """Return the name of the API key environment variable."""
+        pass
+
+    @property
+    def api_key(self) -> str | None:
+        """Return the API key, or None if not set."""
+        return os.getenv(self.api_key_name)
+
+    @property
+    @abstractmethod
     def models(self) -> list[str]:
         """Return a list of available models."""
         pass
@@ -24,11 +35,3 @@ class Provider(ABC):
     def create_chat(self, model: str) -> Chat:
         """Create a new chat session."""
         pass
-
-
-def get_api_key(key: str) -> str:
-    """Get an API key from an environment variable."""
-    api_key = os.getenv(key)
-    if api_key is None:
-        raise RuntimeError(f"{key} environment variable not set")
-    return api_key

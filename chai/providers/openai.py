@@ -1,17 +1,15 @@
 from .chat import Chat, Message
-from .provider import Provider, get_api_key
+from .provider import Provider
 
 from openai import OpenAI
 from typing import Generator
-
-API_KEY = "OPENAI_API_KEY"
 
 
 class OpenAIChat(Chat):
     """OpenAI chat session."""
 
-    def __init__(self, client: OpenAI, model: str) -> None:
-        self._client: OpenAI = client
+    def __init__(self, api_key: str, model: str) -> None:
+        self._client: OpenAI = OpenAI(api_key=api_key)
         self._model: str = model
         self._history: list[Message] = []
 
@@ -49,19 +47,27 @@ class OpenAIChat(Chat):
 class OpenAIProvider(Provider):
     """OpenAI provider."""
 
-    def __init__(self) -> None:
-        self._name: str = "OpenAI"
-        self._client: OpenAI = OpenAI(api_key=get_api_key(API_KEY))
-
     @property
     def name(self) -> str:
-        return self._name
+        return "OpenAI"
+
+    @property
+    def api_key_name(self) -> str:
+        return "OPENAI_API_KEY"
 
     @property
     def models(self) -> list[str]:
-        return sorted([model.id for model in self._client.models.list()])
+        if self.api_key is None:
+            raise RuntimeError(f"{self.api_key_name} environment variable not set")
+        try:
+            client = OpenAI(api_key=self.api_key)
+            return sorted([model.id for model in client.models.list()])
+        except Exception as e:
+            raise RuntimeError(f"Error getting models: {e}")
 
     def create_chat(self, model: str) -> OpenAIChat:
         if model not in self.models:
             raise ValueError(f"Invalid model: {model}")
-        return OpenAIChat(self._client, model)
+        if self.api_key is None:
+            raise RuntimeError(f"{self.api_key_name} environment variable not set")
+        return OpenAIChat(self._client, self.api_key, model)
