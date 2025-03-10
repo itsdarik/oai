@@ -22,7 +22,6 @@ from .providers.chat import Chat
 from .providers.factory import get_providers
 from .providers.provider import Provider
 
-CLI_PROMPT = ">>> "
 MULTI_LINE_INPUT = '"""'
 
 
@@ -114,7 +113,7 @@ def print_conversation(chat: Chat, args: ChatArgs) -> None:
 
     for message in chat.history:
         if message.from_user():
-            print(f"\n{CLI_PROMPT}{message.content}")
+            print(f"\n[{chat.model}] >>> {message.content}")
         else:
             if args.plain:
                 print(message.content)
@@ -155,8 +154,8 @@ def handle_command(user_input: str, chat: Chat, args: ChatArgs) -> None:
     print()
 
 
-def get_user_input() -> str:
-    user_input = input(CLI_PROMPT).strip()
+def get_user_input(chat: Chat) -> str:
+    user_input = input(f"[{chat.model}] >>> ")
 
     # Handle multi-line input.
     if user_input.startswith(MULTI_LINE_INPUT):
@@ -178,7 +177,7 @@ def input_loop(chat: Chat, args: ChatArgs) -> None:
 
     while True:
         try:
-            user_input = get_user_input().strip()
+            user_input = get_user_input(chat).strip()
             if not user_input:
                 continue
 
