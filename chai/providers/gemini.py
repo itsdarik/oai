@@ -46,40 +46,14 @@ class GeminiChat(Chat):
 
     @property
     def history(self) -> list[GeminiMessage]:
-        messages = [GeminiMessage(content) for content in self._chat.get_history()]
-
-        if not messages:
-            return []
-
-        collapsed_messages = []
-        current_message = messages[0]
-
-        for message in messages[1:]:
-            if message.role == current_message.role:
-                # Combine content for same role
-                current_message.content += message.content
-            else:
-                # Different role, add previous message and start tracking the new one
-                collapsed_messages.append(current_message)
-                current_message = message
-
-        # Add the last message
-        collapsed_messages.append(current_message)
-
-        return collapsed_messages
+        return [GeminiMessage(content) for content in self._chat.get_history()]
 
     def clear(self) -> None:
         self._chat = self._client.chats.create(model=self._model)
 
     def send(self, message: str) -> Generator[str, None, None]:
-        response = self._chat.send_message_stream(message)
-
-        full_content = ""
-
-        for chunk in response:
-            chunk_content = chunk.text
-            full_content += chunk_content
-            yield chunk_content
+        for chunk in self._chat.send_message_stream(message):
+            yield chunk.text
 
     def load(self, history: list[GeminiMessage]) -> None:
         self._chat = self._client.chats.create(
