@@ -11,6 +11,7 @@
 # governing permissions and limitations under the License.
 
 from .anthropic import AnthropicProvider
+from .gemini import GeminiProvider
 from .mistral import MistralProvider
 from .openai import OpenAIProvider
 from .provider import Provider
@@ -21,6 +22,7 @@ def get_providers() -> list[Provider]:
     """Return a list of available providers."""
     return [
         AnthropicProvider(),
+        GeminiProvider(),
         MistralProvider(),
         OpenAIProvider(),
         XAIProvider(),
