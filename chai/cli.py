@@ -19,8 +19,8 @@ from rich.live import Live
 from rich.markdown import Markdown
 
 from .providers.chat import Chat
-from .providers.factory import get_providers
 from .providers.provider import Provider
+from .providers.providers import get_providers
 
 MULTI_LINE_INPUT = '"""'
 
