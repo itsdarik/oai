@@ -86,8 +86,9 @@ class AnthropicProvider(Provider):
         if self.api_key is None:
             raise RuntimeError(f"{self.api_key_name} environment variable not set")
         try:
-            client = Anthropic()
-            return sorted([model.id for model in client.models.list()])
+            return sorted(
+                [model.id for model in Anthropic(api_key=self.api_key).models.list()]
+            )
         except Exception as e:
             raise RuntimeError(f"Error getting models: {e}")
 
