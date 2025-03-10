@@ -10,7 +10,7 @@
 # ANY KIND, either express or implied.  See the License for the specific language
 # governing permissions and limitations under the License.
 
-from typing import Generator
+from typing import Any, Generator
 
 from google import genai
 from google.genai.types import Content
@@ -22,11 +22,14 @@ from .provider import Provider
 class GeminiMessage(Message):
     """Gemini chat message."""
 
-    def dict(self) -> dict[str, str]:
+    def __init__(self, content: Content) -> None:
+        super().__init__(content.role, "".join([part.text for part in content.parts]))
+
+    def dict(self) -> dict[str, Any]:
         return {"role": self.role, "content": self.content}
 
     def from_user(self) -> bool:
-        return self.role == "user"
+        return self._content.role == "user"
 
 
 class GeminiChat(Chat):
@@ -43,8 +46,11 @@ class GeminiChat(Chat):
         return self._model
 
     @property
-    def history(self) -> list[Message]:
-        return self._history
+    def history(self) -> list[GeminiMessage]:
+        return [GeminiMessage(content) for content in self._chat.get_history()]
+
+    def clear(self) -> None:
+        self._chat = self._client.chats.create(model=self._model)
 
     def send(self, message: str) -> Generator[str, None, None]:
         response = self._chat.send_message_stream(message)
@@ -57,7 +63,9 @@ class GeminiChat(Chat):
             yield chunk_content
 
     def create_message(self, message_data: dict[str, str]) -> GeminiMessage:
-        return GeminiMessage(role=message_data["role"], content=message_data["content"])
+        return GeminiMessage(
+            Content(role=message_data["role"], parts=message_data["content"])
+        )
 
 
 class GeminiProvider(Provider):

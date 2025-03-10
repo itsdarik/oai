@@ -41,7 +41,7 @@ class MistralChat(Chat):
         return self._model
 
     @property
-    def history(self) -> list[Message]:
+    def history(self) -> list[MistralMessage]:
         return self._history
 
     def send(self, message: str) -> Generator[str, None, None]:

@@ -22,7 +22,7 @@ class Message(ABC):
         self.content: str = content
 
     @abstractmethod
-    def dict(self) -> dict[str, str]:
+    def dict(self) -> dict:
         """Return the message as a dictionary."""
         pass
 
