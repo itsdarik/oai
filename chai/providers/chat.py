@@ -56,6 +56,11 @@ class Chat(ABC):
         """Clear the chat history."""
         self.history.clear()
 
+    def load(self, history: list[Message]) -> None:
+        """Load a chat history."""
+        self.clear()
+        self.history.extend(history)
+
     @abstractmethod
     def create_message(self, message_data: dict[str, str]) -> Message:
         """Create a message from a dictionary."""

@@ -13,7 +13,7 @@
 from typing import Any, Generator
 
 from google import genai
-from google.genai.types import Content
+from google.genai.types import Content, Part
 
 from .chat import Chat, Message
 from .provider import Provider
@@ -29,7 +29,7 @@ class GeminiMessage(Message):
         return {"role": self.role, "content": self.content}
 
     def from_user(self) -> bool:
-        return self._content.role == "user"
+        return self.role == "user"
 
 
 class GeminiChat(Chat):
@@ -37,8 +37,7 @@ class GeminiChat(Chat):
 
     def __init__(self, api_key: str, model: str) -> None:
         self._client: genai.Client = genai.Client(api_key=api_key)
-        self._history: list[Content] = []
-        self._chat = self._client.chats.create(model=model, history=self._history)
+        self._chat = self._client.chats.create(model=model)
         self._model: str = model
 
     @property
@@ -47,7 +46,27 @@ class GeminiChat(Chat):
 
     @property
     def history(self) -> list[GeminiMessage]:
-        return [GeminiMessage(content) for content in self._chat.get_history()]
+        messages = [GeminiMessage(content) for content in self._chat.get_history()]
+
+        if not messages:
+            return []
+
+        collapsed_messages = []
+        current_message = messages[0]
+
+        for message in messages[1:]:
+            if message.role == current_message.role:
+                # Combine content for same role
+                current_message.content += message.content
+            else:
+                # Different role, add previous message and start tracking the new one
+                collapsed_messages.append(current_message)
+                current_message = message
+
+        # Add the last message
+        collapsed_messages.append(current_message)
+
+        return collapsed_messages
 
     def clear(self) -> None:
         self._chat = self._client.chats.create(model=self._model)
@@ -62,9 +81,20 @@ class GeminiChat(Chat):
             full_content += chunk_content
             yield chunk_content
 
+    def load(self, history: list[GeminiMessage]) -> None:
+        self._chat = self._client.chats.create(
+            model=self._model,
+            history=[
+                Content(role=message.role, parts=[Part(text=message.content)])
+                for message in history
+            ],
+        )
+
     def create_message(self, message_data: dict[str, str]) -> GeminiMessage:
         return GeminiMessage(
-            Content(role=message_data["role"], parts=message_data["content"])
+            Content(
+                role=message_data["role"], parts=[Part(text=message_data["content"])]
+            )
         )
 
 

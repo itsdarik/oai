@@ -79,7 +79,6 @@ def load_chat(filename: str, chat: Chat) -> None:
             f"model in file '{path}' ({conversation['model']}) does not match current model ({chat.model})."
         )
 
-    chat.clear()
-
-    for message_data in conversation["messages"]:
-        chat.history.append(chat.create_message(message_data))
+    chat.load(
+        [chat.create_message(message_data) for message_data in conversation["messages"]]
+    )
