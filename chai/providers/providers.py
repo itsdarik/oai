@@ -10,6 +10,7 @@
 # ANY KIND, either express or implied.  See the License for the specific language
 # governing permissions and limitations under the License.
 
+from .anthropic import AnthropicProvider
 from .openai import OpenAIProvider
 from .provider import Provider
 
@@ -17,5 +18,6 @@ from .provider import Provider
 def get_providers() -> list[Provider]:
     """Return a list of available providers."""
     return [
+        AnthropicProvider(),
         OpenAIProvider(),
     ]
