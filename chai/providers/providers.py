@@ -14,6 +14,7 @@ from .anthropic import AnthropicProvider
 from .mistral import MistralProvider
 from .openai import OpenAIProvider
 from .provider import Provider
+from .xai import XAIProvider
 
 
 def get_providers() -> list[Provider]:
@@ -22,4 +23,5 @@ def get_providers() -> list[Provider]:
         AnthropicProvider(),
         MistralProvider(),
         OpenAIProvider(),
+        XAIProvider(),
     ]
