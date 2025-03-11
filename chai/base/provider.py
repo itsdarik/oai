@@ -42,7 +42,7 @@ class Provider(ABC):
         if self.api_key is None:
             raise RuntimeError(f"{self.api_key_name} environment variable not set")
         try:
-            return self._models()
+            return self._get_models()
         except Exception as e:
             raise RuntimeError(f"Error getting models: {e}")
 

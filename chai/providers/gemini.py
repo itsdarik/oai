@@ -28,18 +28,11 @@ class GeminiChat(Chat):
         self._client: genai.Client = genai.Client(api_key=api_key)
         self._chat = self._client.chats.create(model=model)
 
-    def send(self, message: str) -> Generator[str, None, None]:
-        self._history.append(Message(role="user", content=message))
-
-        full_content = ""
-
+    def _send(self, message: str) -> Generator[str, None, None]:
         for chunk in self._chat.send_message_stream(message):
             content = chunk.text
             if content:
-                full_content += content
                 yield content
-
-        self._history.append(Message(role="assistant", content=full_content))
 
     def clear(self) -> None:
         super().clear()

@@ -40,7 +40,19 @@ class Chat(ABC):
         self.clear()
         self._history.extend(history)
 
-    @abstractmethod
     def send(self, message: str) -> Generator[str, None, None]:
         """Send a message to the model and stream the response."""
+        self._history.append(Message(role="user", content=message))
+
+        full_content = ""
+
+        for content in self._send(message):
+            full_content += content
+            yield content
+
+        self._history.append(Message(role="assistant", content=full_content))
+
+    @abstractmethod
+    def _send(self, message: str) -> Generator[str, None, None]:
+        """Provider-specific message sending and response streaming."""
         pass

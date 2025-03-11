@@ -15,7 +15,6 @@ from typing import Generator
 from mistralai import Mistral
 
 from ..base.chat import Chat
-from ..base.message import Message
 from ..base.provider import Provider
 
 
@@ -26,23 +25,16 @@ class MistralChat(Chat):
         super().__init__(model)
         self._client: Mistral = Mistral(api_key=api_key)
 
-    def send(self, message: str) -> Generator[str, None, None]:
-        self._history.append(Message(role="user", content=message))
-
+    def _send(self, _: str) -> Generator[str, None, None]:
         response = self._client.chat.stream(
             messages=[message.to_dict() for message in self._history],
             model=self._model,
         )
 
-        full_content = ""
-
         for chunk in response:
             content = chunk.data.choices[0].delta.content
             if content:
-                full_content += content
                 yield content
-
-        self._history.append(Message(role="assistant", content=full_content))
 
 
 class MistralProvider(Provider):

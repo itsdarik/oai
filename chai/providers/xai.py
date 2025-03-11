@@ -15,7 +15,6 @@ from typing import Generator
 from openai import OpenAI
 
 from ..base.chat import Chat
-from ..base.message import Message
 from ..base.provider import Provider
 
 XAI_URL = "https://api.x.ai/v1"
@@ -28,24 +27,17 @@ class XAIChat(Chat):
         super().__init__(model)
         self._client: OpenAI = OpenAI(api_key=api_key, base_url=XAI_URL)
 
-    def send(self, message: str) -> Generator[str, None, None]:
-        self._history.append(Message(role="user", content=message))
-
+    def _send(self, _: str) -> Generator[str, None, None]:
         response = self._client.chat.completions.create(
             messages=[message.to_dict() for message in self._history],
             model=self._model,
             stream=True,
         )
 
-        full_content = ""
-
         for chunk in response:
             content = chunk.choices[0].delta.content
             if content:
-                full_content += content
                 yield content
-
-        self._history.append(Message(role="assistant", content=full_content))
 
 
 class XAIProvider(Provider):

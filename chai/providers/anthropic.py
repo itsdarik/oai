@@ -15,7 +15,6 @@ from typing import Generator
 from anthropic import Anthropic
 
 from ..base.chat import Chat
-from ..base.message import Message
 from ..base.provider import Provider
 
 # https://docs.anthropic.com/en/docs/about-claude/models/all-models
@@ -30,21 +29,14 @@ class AnthropicChat(Chat):
         super().__init__(model)
         self._client: Anthropic = Anthropic(api_key=api_key)
 
-    def send(self, message: str) -> Generator[str, None, None]:
-        self._history.append(Message(role="user", content=message))
-
-        full_content = ""
-
+    def _send(self, _: str) -> Generator[str, None, None]:
         with self._client.messages.stream(
             max_tokens=MAX_OUTPUT_TOKENS,
             messages=[message.to_dict() for message in self._history],
             model=self._model,
         ) as stream:
             for text in stream.text_stream:
-                full_content += text
                 yield text
-
-        self._history.append(Message(role="assistant", content=full_content))
 
 
 class AnthropicProvider(Provider):
