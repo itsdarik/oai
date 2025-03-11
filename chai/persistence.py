@@ -36,7 +36,7 @@ def serialize_conversation(chat: Chat) -> Dict[str, Any]:
     """Serialize a chat conversation to a dictionary."""
     return {
         "model": chat.model,
-        "messages": [message.dict() for message in chat.history],
+        "messages": [message.to_dict() for message in chat.history],
     }
 
 

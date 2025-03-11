@@ -20,51 +20,38 @@ from ..base.message import Message
 from ..base.provider import Provider
 
 
-class GeminiMessage(Message):
-    """Gemini chat message."""
-
-    def __init__(self, content: Content) -> None:
-        super().__init__(content.role, "".join([part.text for part in content.parts]))
-
-
 class GeminiChat(Chat):
     """Gemini chat session."""
 
     def __init__(self, api_key: str, model: str) -> None:
+        super().__init__(model)
         self._client: genai.Client = genai.Client(api_key=api_key)
         self._chat = self._client.chats.create(model=model)
-        self._model: str = model
-
-    @property
-    def model(self) -> str:
-        return self._model
-
-    @property
-    def history(self) -> list[GeminiMessage]:
-        return [GeminiMessage(content) for content in self._chat.get_history()]
-
-    def clear(self) -> None:
-        self._chat = self._client.chats.create(model=self._model)
 
     def send(self, message: str) -> Generator[str, None, None]:
+        self._history.append(Message(role="user", content=message))
+
+        full_content = ""
+
         for chunk in self._chat.send_message_stream(message):
-            yield chunk.text
+            content = chunk.text
+            if content:
+                full_content += content
+                yield content
 
-    def load(self, history: list[GeminiMessage]) -> None:
-        self._chat = self._client.chats.create(
-            model=self._model,
-            history=[
-                Content(role=message.role, parts=[Part(text=message.content)])
-                for message in history
-            ],
-        )
+        self._history.append(Message(role="assistant", content=full_content))
 
-    def create_message(self, message_data: dict[str, str]) -> GeminiMessage:
-        return GeminiMessage(
-            Content(
-                role=message_data["role"], parts=[Part(text=message_data["content"])]
-            )
-        )
+    def clear(self) -> None:
+        super().clear()
+        self._chat = self._client.chats.create(model=self._model)
+
+    def load(self, history: list[Message]) -> None:
+        super().load(history)
+        chat_history = []
+        for message in history:
+            role = "model" if message.role == "assistant" else message.role
+            chat_history.append(Content(parts=[Part(text=message.content)], role=role))
+        self._chat = self._client.chats.create(model=self._model, history=chat_history)
 
 
 class GeminiProvider(Provider):
