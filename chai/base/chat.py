@@ -19,33 +19,28 @@ from .message import Message
 class Chat(ABC):
     """Abstract base class for chat sessions."""
 
-    @property
-    @abstractmethod
-    def model(self) -> str:
-        """Return the model name."""
-        pass
+    def __init__(self, model: str) -> None:
+        self._model: str = model
+        self._history: list[Message] = []
 
     @property
-    @abstractmethod
+    def model(self) -> str:
+        return self._model
+
+    @property
     def history(self) -> list[Message]:
-        """Return the chat history."""
-        pass
+        return self._history
+
+    def clear(self) -> None:
+        """Clear the chat history."""
+        self._history.clear()
+
+    def load(self, history: list[Message]) -> None:
+        """Replace chat with a saved chat."""
+        self.clear()
+        self._history.extend(history)
 
     @abstractmethod
     def send(self, message: str) -> Generator[str, None, None]:
         """Send a message to the model and stream the response."""
-        pass
-
-    def clear(self) -> None:
-        """Clear the chat history."""
-        self.history.clear()
-
-    def load(self, history: list[Message]) -> None:
-        """Load a chat history."""
-        self.clear()
-        self.history.extend(history)
-
-    @abstractmethod
-    def create_message(self, message_data: dict[str, str]) -> Message:
-        """Create a message from a dictionary."""
         pass

@@ -27,17 +27,8 @@ class AnthropicChat(Chat):
     """Anthropic chat session."""
 
     def __init__(self, api_key: str, model: str) -> None:
+        super().__init__(model)
         self._client: Anthropic = Anthropic(api_key=api_key)
-        self._model: str = model
-        self._history: list[Message] = []
-
-    @property
-    def model(self) -> str:
-        return self._model
-
-    @property
-    def history(self) -> list[Message]:
-        return self._history
 
     def send(self, message: str) -> Generator[str, None, None]:
         self._history.append(Message(role="user", content=message))
@@ -46,7 +37,7 @@ class AnthropicChat(Chat):
 
         with self._client.messages.stream(
             max_tokens=MAX_OUTPUT_TOKENS,
-            messages=[message.dict() for message in self._history],
+            messages=[message.to_dict() for message in self._history],
             model=self._model,
         ) as stream:
             for text in stream.text_stream:
@@ -54,9 +45,6 @@ class AnthropicChat(Chat):
                 yield text
 
         self._history.append(Message(role="assistant", content=full_content))
-
-    def create_message(self, message_data: dict[str, str]) -> Message:
-        return Message(role=message_data["role"], content=message_data["content"])
 
 
 class AnthropicProvider(Provider):

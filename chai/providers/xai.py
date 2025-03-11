@@ -25,23 +25,14 @@ class XAIChat(Chat):
     """XAI chat session."""
 
     def __init__(self, api_key: str, model: str) -> None:
+        super().__init__(model)
         self._client: OpenAI = OpenAI(api_key=api_key, base_url=XAI_URL)
-        self._model: str = model
-        self._history: list[Message] = []
-
-    @property
-    def model(self) -> str:
-        return self._model
-
-    @property
-    def history(self) -> list[Message]:
-        return self._history
 
     def send(self, message: str) -> Generator[str, None, None]:
         self._history.append(Message(role="user", content=message))
 
         response = self._client.chat.completions.create(
-            messages=[message.dict() for message in self._history],
+            messages=[message.to_dict() for message in self._history],
             model=self._model,
             stream=True,
         )
@@ -55,9 +46,6 @@ class XAIChat(Chat):
                 yield chunk_content
 
         self._history.append(Message(role="assistant", content=full_content))
-
-    def create_message(self, message_data: dict[str, str]) -> Message:
-        return Message(role=message_data["role"], content=message_data["content"])
 
 
 class XAIProvider(Provider):

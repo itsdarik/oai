@@ -18,10 +18,24 @@ class Message:
         self.role: str = role
         self.content: str = content
 
-    def dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, str]:
         """Return the message as a dictionary."""
         return {"role": self.role, "content": self.content}
 
     def from_user(self) -> bool:
         """Return True if the message is from the user."""
         return self.role == "user"
+
+    @classmethod
+    def from_dict(cls, message: dict[str, str]) -> "Message":
+        """Create a message from a dictionary.
+
+        The dictionary must have the following keys:
+        - role: The role of the message sender.
+        - content: The content of the message.
+        """
+        if "role" not in message:
+            raise ValueError(f"role not found in {message}.")
+        if "content" not in message:
+            raise ValueError(f"content not found in {message}.")
+        return cls(message["role"], message["content"])

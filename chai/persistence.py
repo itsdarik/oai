@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from .base.chat import Chat
+from .base.message import Message
 
 SAVE_DIR = Path.home() / ".chai"
 
@@ -79,6 +80,4 @@ def load_chat(filename: str, chat: Chat) -> None:
             f"model in file '{path}' ({conversation['model']}) does not match current model ({chat.model})."
         )
 
-    chat.load(
-        [chat.create_message(message_data) for message_data in conversation["messages"]]
-    )
+    chat.load([Message.from_dict(message) for message in conversation["messages"]])
