@@ -14,8 +14,8 @@ from typing import Generator
 
 from anthropic import Anthropic
 
-from .chat import Chat, Message
-from .provider import Provider
+from ..base.chat import Chat, Message
+from ..base.provider import Provider
 
 # https://docs.anthropic.com/en/docs/about-claude/models/all-models
 # Claude 3.7 Sonnet Normal

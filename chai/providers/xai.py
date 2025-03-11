@@ -14,8 +14,8 @@ from typing import Generator
 
 from openai import OpenAI
 
-from .chat import Chat, Message
-from .provider import Provider
+from ..base.chat import Chat, Message
+from ..base.provider import Provider
 
 XAI_URL = "https://api.x.ai/v1"
 

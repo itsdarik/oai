@@ -14,8 +14,8 @@ from typing import Generator
 
 from mistralai import Mistral
 
-from .chat import Chat, Message
-from .provider import Provider
+from ..base.chat import Chat, Message
+from ..base.provider import Provider
 
 
 class MistralMessage(Message):

@@ -15,8 +15,8 @@ from typing import Any, Generator
 from google import genai
 from google.genai.types import Content, Part
 
-from .chat import Chat, Message
-from .provider import Provider
+from ..base.chat import Chat, Message
+from ..base.provider import Provider
 
 
 class GeminiMessage(Message):

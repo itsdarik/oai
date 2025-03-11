@@ -18,8 +18,8 @@ from rich.console import Console
 from rich.live import Live
 from rich.markdown import Markdown
 
-from .providers.chat import Chat
-from .providers.provider import Provider
+from .base.chat import Chat
+from .base.provider import Provider
 from .providers.providers import get_providers
 
 MULTI_LINE_INPUT = '"""'

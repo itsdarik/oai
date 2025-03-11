@@ -10,11 +10,11 @@
 # ANY KIND, either express or implied.  See the License for the specific language
 # governing permissions and limitations under the License.
 
+from ..base.provider import Provider
 from .anthropic import AnthropicProvider
 from .gemini import GeminiProvider
 from .mistral import MistralProvider
 from .openai import OpenAIProvider
-from .provider import Provider
 from .xai import XAIProvider
 
 

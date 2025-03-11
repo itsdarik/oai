@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict
 
-from .providers.chat import Chat
+from .base.chat import Chat
 
 SAVE_DIR = Path.home() / ".chai"
 
