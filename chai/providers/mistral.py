@@ -48,13 +48,8 @@ class MistralChat(Chat):
 class MistralProvider(Provider):
     """Mistral provider."""
 
-    @property
-    def name(self) -> str:
-        return "Mistral"
-
-    @property
-    def api_key_name(self) -> str:
-        return "MISTRAL_API_KEY"
+    def __init__(self) -> None:
+        super().__init__("Mistral", "MISTRAL_API_KEY")
 
     @property
     def models(self) -> list[str]:

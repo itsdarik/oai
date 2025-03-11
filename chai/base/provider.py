@@ -19,22 +19,22 @@ from .chat import Chat
 class Provider(ABC):
     """Abstract base class for LLM providers."""
 
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """Return the provider name."""
-        pass
+    def __init__(self, name: str, api_key_name: str):
+        self._name = name
+        self._api_key_name = api_key_name
 
     @property
-    @abstractmethod
+    def name(self) -> str:
+        return self._name
+
+    @property
     def api_key_name(self) -> str:
-        """Return the name of the API key environment variable."""
-        pass
+        return self._api_key_name
 
     @property
     def api_key(self) -> str | None:
         """Return the API key, or None if not set."""
-        return os.getenv(self.api_key_name)
+        return os.getenv(self._api_key_name)
 
     @property
     @abstractmethod

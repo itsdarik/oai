@@ -57,13 +57,8 @@ class GeminiChat(Chat):
 class GeminiProvider(Provider):
     """Gemini provider."""
 
-    @property
-    def name(self) -> str:
-        return "Gemini"
-
-    @property
-    def api_key_name(self) -> str:
-        return "GEMINI_API_KEY"
+    def __init__(self) -> None:
+        super().__init__("Gemini", "GEMINI_API_KEY")
 
     @property
     def models(self) -> list[str]:

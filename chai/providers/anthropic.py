@@ -50,13 +50,8 @@ class AnthropicChat(Chat):
 class AnthropicProvider(Provider):
     """Anthropic provider."""
 
-    @property
-    def name(self) -> str:
-        return "Anthropic"
-
-    @property
-    def api_key_name(self) -> str:
-        return "ANTHROPIC_API_KEY"
+    def __init__(self) -> None:
+        super().__init__("Anthropic", "ANTHROPIC_API_KEY")
 
     @property
     def models(self) -> list[str]:

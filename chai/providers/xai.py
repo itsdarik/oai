@@ -51,13 +51,8 @@ class XAIChat(Chat):
 class XAIProvider(Provider):
     """XAI provider."""
 
-    @property
-    def name(self) -> str:
-        return "xAI"
-
-    @property
-    def api_key_name(self) -> str:
-        return "XAI_API_KEY"
+    def __init__(self) -> None:
+        super().__init__("xAI", "XAI_API_KEY")
 
     @property
     def models(self) -> list[str]:

@@ -49,13 +49,8 @@ class OpenAIChat(Chat):
 class OpenAIProvider(Provider):
     """OpenAI provider."""
 
-    @property
-    def name(self) -> str:
-        return "OpenAI"
-
-    @property
-    def api_key_name(self) -> str:
-        return "OPENAI_API_KEY"
+    def __init__(self) -> None:
+        super().__init__("OpenAI", "OPENAI_API_KEY")
 
     @property
     def models(self) -> list[str]:
