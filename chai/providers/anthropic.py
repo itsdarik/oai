@@ -19,7 +19,7 @@ from ..base.message import Message
 from ..base.provider import Provider
 
 # https://docs.anthropic.com/en/docs/about-claude/models/all-models
-# Claude 3.7 Sonnet Normal
+# Claude 3.7 Sonnet (Normal)
 MAX_OUTPUT_TOKENS = 8192
 
 
