@@ -10,12 +10,13 @@
 # ANY KIND, either express or implied.  See the License for the specific language
 # governing permissions and limitations under the License.
 
-from typing import Any, Generator
+from typing import Generator
 
 from google import genai
 from google.genai.types import Content, Part
 
-from ..base.chat import Chat, Message
+from ..base.chat import Chat
+from ..base.message import Message
 from ..base.provider import Provider
 
 
@@ -24,12 +25,6 @@ class GeminiMessage(Message):
 
     def __init__(self, content: Content) -> None:
         super().__init__(content.role, "".join([part.text for part in content.parts]))
-
-    def dict(self) -> dict[str, Any]:
-        return {"role": self.role, "content": self.content}
-
-    def from_user(self) -> bool:
-        return self.role == "user"
 
 
 class GeminiChat(Chat):

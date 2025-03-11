@@ -18,34 +18,24 @@ from ..base.chat import Chat, Message
 from ..base.provider import Provider
 
 
-class MistralMessage(Message):
-    """Mistral chat message."""
-
-    def dict(self) -> dict[str, str]:
-        return {"role": self.role, "content": self.content}
-
-    def from_user(self) -> bool:
-        return self.role == "user"
-
-
 class MistralChat(Chat):
     """Mistral chat session."""
 
     def __init__(self, api_key: str, model: str) -> None:
         self._client: Mistral = Mistral(api_key=api_key)
         self._model: str = model
-        self._history: list[MistralMessage] = []
+        self._history: list[Message] = []
 
     @property
     def model(self) -> str:
         return self._model
 
     @property
-    def history(self) -> list[MistralMessage]:
+    def history(self) -> list[Message]:
         return self._history
 
     def send(self, message: str) -> Generator[str, None, None]:
-        self._history.append(MistralMessage(role="user", content=message))
+        self._history.append(Message(role="user", content=message))
 
         response = self._client.chat.stream(
             messages=[message.dict() for message in self._history],
@@ -59,12 +49,10 @@ class MistralChat(Chat):
             full_content += chunk_content
             yield chunk_content
 
-        self._history.append(MistralMessage(role="assistant", content=full_content))
+        self._history.append(Message(role="assistant", content=full_content))
 
-    def create_message(self, message_data: dict[str, str]) -> MistralMessage:
-        return MistralMessage(
-            role=message_data["role"], content=message_data["content"]
-        )
+    def create_message(self, message_data: dict[str, str]) -> Message:
+        return Message(role=message_data["role"], content=message_data["content"])
 
 
 class MistralProvider(Provider):

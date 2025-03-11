@@ -14,22 +14,13 @@ from typing import Generator
 
 from anthropic import Anthropic
 
-from ..base.chat import Chat, Message
+from ..base.chat import Chat
+from ..base.message import Message
 from ..base.provider import Provider
 
 # https://docs.anthropic.com/en/docs/about-claude/models/all-models
 # Claude 3.7 Sonnet Normal
 MAX_OUTPUT_TOKENS = 8192
-
-
-class AnthropicMessage(Message):
-    """Anthropic chat message."""
-
-    def dict(self) -> dict[str, str]:
-        return {"role": self.role, "content": self.content}
-
-    def from_user(self) -> bool:
-        return self.role == "user"
 
 
 class AnthropicChat(Chat):
@@ -38,18 +29,18 @@ class AnthropicChat(Chat):
     def __init__(self, api_key: str, model: str) -> None:
         self._client: Anthropic = Anthropic(api_key=api_key)
         self._model: str = model
-        self._history: list[AnthropicMessage] = []
+        self._history: list[Message] = []
 
     @property
     def model(self) -> str:
         return self._model
 
     @property
-    def history(self) -> list[AnthropicMessage]:
+    def history(self) -> list[Message]:
         return self._history
 
     def send(self, message: str) -> Generator[str, None, None]:
-        self._history.append(AnthropicMessage(role="user", content=message))
+        self._history.append(Message(role="user", content=message))
 
         full_content = ""
 
@@ -62,12 +53,10 @@ class AnthropicChat(Chat):
                 full_content += text
                 yield text
 
-        self._history.append(AnthropicMessage(role="assistant", content=full_content))
+        self._history.append(Message(role="assistant", content=full_content))
 
-    def create_message(self, message_data: dict[str, str]) -> AnthropicMessage:
-        return AnthropicMessage(
-            role=message_data["role"], content=message_data["content"]
-        )
+    def create_message(self, message_data: dict[str, str]) -> Message:
+        return Message(role=message_data["role"], content=message_data["content"])
 
 
 class AnthropicProvider(Provider):

@@ -10,22 +10,18 @@
 # ANY KIND, either express or implied.  See the License for the specific language
 # governing permissions and limitations under the License.
 
-from abc import ABC, abstractmethod
 
-
-class Message(ABC):
-    """Abstract base class for chat messages."""
+class Message:
+    """Chat message."""
 
     def __init__(self, role: str, content: str):
         self.role: str = role
         self.content: str = content
 
-    @abstractmethod
-    def dict(self) -> dict:
+    def dict(self) -> dict[str, str]:
         """Return the message as a dictionary."""
-        pass
+        return {"role": self.role, "content": self.content}
 
-    @abstractmethod
     def from_user(self) -> bool:
-        """Return True if the message is from the user, False otherwise."""
-        pass
+        """Return True if the message is from the user."""
+        return self.role == "user"
