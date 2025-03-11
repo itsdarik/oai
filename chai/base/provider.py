@@ -42,7 +42,15 @@ class Provider(ABC):
         """Return a list of available models."""
         pass
 
-    @abstractmethod
     def create_chat(self, model: str) -> Chat:
         """Create a new chat session."""
+        if model not in self.models:
+            raise ValueError(f"Invalid model: {model}")
+        if self.api_key is None:
+            raise RuntimeError(f"{self.api_key_name} environment variable not set")
+        return self._create_chat_instance(model)
+
+    @abstractmethod
+    def _create_chat_instance(self, model: str) -> Chat:
+        """Create the provider-specific chat instance."""
         pass

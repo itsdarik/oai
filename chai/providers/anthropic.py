@@ -64,9 +64,5 @@ class AnthropicProvider(Provider):
         except Exception as e:
             raise RuntimeError(f"Error getting models: {e}")
 
-    def create_chat(self, model: str) -> AnthropicChat:
-        if model not in self.models:
-            raise ValueError(f"Invalid model: {model}")
-        if self.api_key is None:
-            raise RuntimeError(f"{self.api_key_name} environment variable not set")
+    def _create_chat_instance(self, model: str) -> AnthropicChat:
         return AnthropicChat(self.api_key, model)
