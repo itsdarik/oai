@@ -53,7 +53,7 @@ class AnthropicProvider(Provider):
     def __init__(self) -> None:
         super().__init__("Anthropic", "ANTHROPIC_API_KEY")
 
-    def _models(self) -> list[str]:
+    def _get_models(self) -> list[str]:
         return sorted(
             [model.id for model in Anthropic(api_key=self.api_key).models.list()]
         )

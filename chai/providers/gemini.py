@@ -60,7 +60,7 @@ class GeminiProvider(Provider):
     def __init__(self) -> None:
         super().__init__("Gemini", "GEMINI_API_KEY")
 
-    def _models(self) -> list[str]:
+    def _get_models(self) -> list[str]:
         return sorted(
             [
                 model.name.removeprefix("models/")

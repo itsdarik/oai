@@ -51,7 +51,7 @@ class MistralProvider(Provider):
     def __init__(self) -> None:
         super().__init__("Mistral", "MISTRAL_API_KEY")
 
-    def _models(self) -> list[str]:
+    def _get_models(self) -> list[str]:
         with Mistral(api_key=self.api_key) as mistral:
             return sorted([model.id for model in mistral.models.list().data])
 

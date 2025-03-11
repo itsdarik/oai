@@ -47,7 +47,7 @@ class Provider(ABC):
             raise RuntimeError(f"Error getting models: {e}")
 
     @abstractmethod
-    def _models(self) -> list[str]:
+    def _get_models(self) -> list[str]:
         """Return the provider-specific list of available models."""
         pass
 
