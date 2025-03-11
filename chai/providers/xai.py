@@ -40,10 +40,10 @@ class XAIChat(Chat):
         full_content = ""
 
         for chunk in response:
-            if chunk.choices[0].delta.content:
-                chunk_content = chunk.choices[0].delta.content
-                full_content += chunk_content
-                yield chunk_content
+            content = chunk.choices[0].delta.content
+            if content:
+                full_content += content
+                yield content
 
         self._history.append(Message(role="assistant", content=full_content))
 

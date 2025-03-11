@@ -37,9 +37,10 @@ class MistralChat(Chat):
         full_content = ""
 
         for chunk in response:
-            chunk_content = chunk.data.choices[0].delta.content
-            full_content += chunk_content
-            yield chunk_content
+            content = chunk.data.choices[0].delta.content
+            if content:
+                full_content += content
+                yield content
 
         self._history.append(Message(role="assistant", content=full_content))
 
