@@ -13,23 +13,7 @@
 from abc import ABC, abstractmethod
 from typing import Generator
 
-
-class Message(ABC):
-    """Abstract base class for chat messages."""
-
-    def __init__(self, role: str, content: str):
-        self.role: str = role
-        self.content: str = content
-
-    @abstractmethod
-    def dict(self) -> dict:
-        """Return the message as a dictionary."""
-        pass
-
-    @abstractmethod
-    def from_user(self) -> bool:
-        """Return True if the message is from the user, False otherwise."""
-        pass
+from .message import Message
 
 
 class Chat(ABC):
