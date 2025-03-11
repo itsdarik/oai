@@ -51,15 +51,9 @@ class MistralProvider(Provider):
     def __init__(self) -> None:
         super().__init__("Mistral", "MISTRAL_API_KEY")
 
-    @property
-    def models(self) -> list[str]:
-        if self.api_key is None:
-            raise RuntimeError(f"{self.api_key_name} environment variable not set")
-        try:
-            with Mistral(api_key=self.api_key) as mistral:
-                return sorted([model.id for model in mistral.models.list().data])
-        except Exception as e:
-            raise RuntimeError(f"Error getting models: {e}")
+    def _models(self) -> list[str]:
+        with Mistral(api_key=self.api_key) as mistral:
+            return sorted([model.id for model in mistral.models.list().data])
 
     def _create_chat_instance(self, model: str) -> MistralChat:
         return MistralChat(self.api_key, model)

@@ -37,9 +37,18 @@ class Provider(ABC):
         return os.getenv(self._api_key_name)
 
     @property
-    @abstractmethod
     def models(self) -> list[str]:
-        """Return a list of available models."""
+        """Return the list of available models."""
+        if self.api_key is None:
+            raise RuntimeError(f"{self.api_key_name} environment variable not set")
+        try:
+            return self._models()
+        except Exception as e:
+            raise RuntimeError(f"Error getting models: {e}")
+
+    @abstractmethod
+    def _models(self) -> list[str]:
+        """Return the provider-specific list of available models."""
         pass
 
     def create_chat(self, model: str) -> Chat:

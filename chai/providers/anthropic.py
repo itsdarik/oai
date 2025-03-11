@@ -53,16 +53,10 @@ class AnthropicProvider(Provider):
     def __init__(self) -> None:
         super().__init__("Anthropic", "ANTHROPIC_API_KEY")
 
-    @property
-    def models(self) -> list[str]:
-        if self.api_key is None:
-            raise RuntimeError(f"{self.api_key_name} environment variable not set")
-        try:
-            return sorted(
-                [model.id for model in Anthropic(api_key=self.api_key).models.list()]
-            )
-        except Exception as e:
-            raise RuntimeError(f"Error getting models: {e}")
+    def _models(self) -> list[str]:
+        return sorted(
+            [model.id for model in Anthropic(api_key=self.api_key).models.list()]
+        )
 
     def _create_chat_instance(self, model: str) -> AnthropicChat:
         return AnthropicChat(self.api_key, model)
